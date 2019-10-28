@@ -34,7 +34,8 @@ const login = (req, res) => {
       );
     }
 
-    req.session.account = Account.AccountModel.toAPI(account);
+    const session = req.session;
+    session.account = Account.AccountModel.toAPI(account);
 
     return res.json({ redirect: '/maker' });
   });
@@ -74,8 +75,9 @@ const signup = (req, res) => {
     const savePromise = newAccount.save();
 
     savePromise.then(() => {
-      req.session.account = Account.AccountModel.toAPI(newAccount);
-      res.json({ redirect: '/maker' })
+      const session = req.session;
+      session.account = Account.AccountModel.toAPI(newAccount);
+      res.json({ redirect: '/maker' });
     });
 
     savePromise.catch((err) => {

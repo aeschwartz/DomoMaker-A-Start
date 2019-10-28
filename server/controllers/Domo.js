@@ -5,12 +5,12 @@ const Domo = models.Domo;
 
 const makerPage = (req, res) => {
   Domo.DomoModel.findByOwner(req.session.account._id, (err, docs) => {
-    if(err){
+    if (err) {
       console.log(err);
-      return res.status(400).json({error: 'An error occurred'});
+      return res.status(400).json({ error: 'An error occurred' });
     }
 
-    return res.render('app', {domos: docs});
+    return res.render('app', { domos: docs });
   });
 };
 
@@ -22,7 +22,7 @@ const makeDomo = (req, res) => {
   const domoData = {
     name: req.body.name,
     age: req.body.age,
-    owner: req.session.account._id
+    owner: req.session.account._id,
   };
 
   const newDomo = new Domo.DomoModel(domoData);
@@ -44,9 +44,9 @@ const makeDomo = (req, res) => {
   });
 
   return domoPromise;
-}
+};
 
 module.exports = {
   makerPage,
-  make: makeDomo
+  make: makeDomo,
 };

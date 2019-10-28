@@ -36,7 +36,7 @@ app.use(session({
   key: 'sessionid',
   secret: 'Domo Arigato',
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
 })); // enable session tracking with cookies
 
 // setup handlebars

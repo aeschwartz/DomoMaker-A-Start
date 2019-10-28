@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const expressHandlebars = require('express-handlebars');
+const session = require('express-session');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -31,6 +32,12 @@ app.use(compression()); // enables server side compression
 app.use(bodyParser.urlencoded({
   extended: true,
 })); // enable POST body parsing into req.body
+app.use(session({
+  key: 'sessionid',
+  secret: 'Domo Arigato',
+  resave: true,
+  saveUninitialized: true
+})); // enable session tracking with cookies
 
 // setup handlebars
 app.engine('handlebars', expressHandlebars({ defaultLayout: 'main' }));

@@ -12,53 +12,56 @@ const signupPage = (req, res) => {
 };
 
 const logout = (req, res) => {
+  req.session.destroy();
   res.redirect('/');
 };
 
 const login = (req, res) => {
-    // DATA VALIDATION
+  // DATA VALIDATION
   const username = `${req.body.username}`;
   const password = `${req.body.pass}`;
 
   if (!username || !password) {
     return res.status(400).json(
-            { error: 'RAWR! All fields are required' }
-        );
+      { error: 'RAWR! All fields are required' }
+    );
   }
 
   return Account.AccountModel.authenticate(username, password, (err, account) => {
     if (err || !account) {
       return res.status(401).json(
-                { error: 'Wrong username or password' }
-            );
+        { error: 'Wrong username or password' }
+      );
     }
+
+    req.session.account = Account.AccountModel.toAPI(account);
 
     return res.json({ redirect: '/maker' });
   });
 };
 
 const signup = (req, res) => {
-    // DATA VALIDATION
-    // convert to strings if not already, this way is more optimized
+  // DATA VALIDATION
+  // convert to strings if not already, this way is more optimized
   const username = `${req.body.username}`;
   const pass = `${req.body.pass}`;
   const pass2 = `${req.body.pass2}`;
 
-    // check for ALL fields
+  // check for ALL fields
   if (!username || !pass || !pass2) {
     return res.status(400).json(
-            { error: 'RAWR! All fields are required' }
-        );
+      { error: 'RAWR! All fields are required' }
+    );
   }
 
-    // check if passwords match
+  // check if passwords match
   if (pass !== pass2) {
     return res.status(400).json(
-            { error: 'RAWR! Passwords do not match' }
-        );
+      { error: 'RAWR! Passwords do not match' }
+    );
   }
 
-    // ENCRYPT PASSWORDS & CREATE DATA ENTRY
+  // ENCRYPT PASSWORDS & CREATE DATA ENTRY
   return Account.AccountModel.generateHash(pass, (salt, hash) => {
     const accountData = {
       username,
@@ -70,15 +73,18 @@ const signup = (req, res) => {
 
     const savePromise = newAccount.save();
 
-    savePromise.then(() => res.json({ redirect: '/maker' }));
+    savePromise.then(() => {
+      req.session.account = Account.AccountModel.toAPI(newAccount);
+      res.json({ redirect: '/maker' })
+    });
 
     savePromise.catch((err) => {
       console.log(err);
 
       if (err.code === 11000) {
         return res.status(400).json(
-                    { error: 'Username already in use.' }
-                );
+          { error: 'Username already in use.' }
+        );
       }
 
       return res.status(400).json({ error: 'An error occurred' });
